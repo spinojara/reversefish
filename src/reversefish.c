@@ -4,6 +4,7 @@
 #include <strings.h>
 #include <errno.h>
 #include <time.h>
+#include <getopt.h>
 
 #include "bitboard.h"
 #include "magicbitboard.h"
@@ -11,11 +12,102 @@
 #include "move.h"
 #include "search.h"
 
-int main(void) {
+int main(int argc, char **argv) {
 	bitboard_init();
 	magicbitboard_init();
 
+	setbuf(stdout, NULL);
+
 	struct position pos;
+	startpos(&pos);
+
+	static struct option opts[] = {
+		{ "moves",  required_argument, NULL, 'm', },
+	};
+
+	char *endptr;
+	int c, option_index = 0;
+	int error = 0;
+	while ((c = getopt_long(argc, argv, "qm:", opts, &option_index)) != -1) {
+		switch (c) {
+		case 'm':;
+			char str[3] = { 0 };
+			for (size_t i = 0; 2 * i + 1 < strlen(optarg); i++) {
+				str[0] = optarg[2 * i];
+				str[1] = optarg[2 * i + 1];
+
+				printf("trying to make move\n");
+
+				move_t move;
+				if (string_to_move(&move, &pos, str)) {
+					error = 1;
+					fprintf(stderr, "error: bad move '%s'\n", str);
+					break;
+				}
+				else {
+					if (move == MOVE_NULL)
+						pos.turn = other_color(pos.turn);
+					else
+						do_move(&pos, move);
+				}
+			}
+			break;
+		default:
+			error = 1;
+			break;
+		}
+	}
+
+	if (error)
+		return 1;
+
+	for (int i = optind; i < argc; i++) {
+		if (!strchr(argv[i], '=')) {
+			error = 1;
+			fprintf(stderr, "error: invalid option '%s'\n", argv[i]);
+			break;
+		}
+		char *option = argv[i];
+		char *value = strchr(argv[i], '=');
+		*value = '\0';
+		value++;
+
+		if (!strcmp(option, "c")) {
+			errno = 0;
+			double a = strtod(value, &endptr);
+			if (errno || *endptr != '\0') {
+				error = 1;
+				break;
+			}
+			set_c(a);
+		}
+		else if (!strcmp(option, "cornervalue")) {
+			errno = 0;
+			double a = strtod(value, &endptr);
+			if (errno || *endptr != '\0') {
+				error = 1;
+				break;
+			}
+			set_cornervalue(a);
+		}
+		else if (!strcmp(option, "sidevalue")) {
+			errno = 0;
+			double a = strtod(value, &endptr);
+			if (errno || *endptr != '\0') {
+				error = 1;
+				break;
+			}
+			set_sidevalue(a);
+		}
+		else {
+			error = 1;
+			fprintf(stderr, "error: unknown option '%s'\n", option);
+			break;
+		}
+	}
+
+	if (error)
+		return 1;
 
 	uint64_t seed = time(NULL);
 
@@ -51,17 +143,12 @@ int main(void) {
 		if (!fgets(buf, sizeof(buf), stdin))
 			exit(1);
 		errno = 0;
-		char *endptr;
 		maxtime = strtol(buf, &endptr, 10);
-		if (errno || *endptr != '\n' || maxtime < 1) {
+		if (errno || *endptr != '\n' || maxtime < 1)
 			printf("Your input was not recognized.\n");
-		}
-		else {
+		else
 			break;
-		}
 	}
-
-	startpos(&pos);
 
 	print_position(&pos);
 

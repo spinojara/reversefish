@@ -60,7 +60,11 @@ TT        ?= 256
 SRC = reversefish.c bitboard.c magicbitboard.c util.c move.c position.c\
       search.c
 
+SRC_PLAY = reverseplay.c bitboard.c magicbitboard.c util.c move.c position.c
+
 OBJ = $(patsubst %.c,obj/%.o,$(SRC))
+
+OBJ_PLAY = $(patsubst %.c,obj/%.o,$(SRC_PLAY))
 
 BIN = reversefish
 
@@ -74,6 +78,8 @@ MAN6DIR = $(MANDIR)/man6
 all: reversefish
 
 reversefish: $(OBJ)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+reverseplay: $(OBJ_PLAY)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 obj/%.o: src/%.c dep/%.d

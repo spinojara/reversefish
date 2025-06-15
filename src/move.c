@@ -61,6 +61,23 @@ void do_move(struct position *pos, move_t move) {
 	pos->turn = other_color(pos->turn);
 }
 
+int flip_count(const struct position *pos, move_t move) {
+	uint64_t attacks = rook_attacks_pre(move, pos->piece[other_color(pos->turn)]) | bishop_attacks_pre(move, pos->piece[other_color(pos->turn)]);
+	int sq;
+
+	int ret = 0;
+	while (attacks) {
+		sq = ctz(attacks);
+
+		if (get_bit(pos->piece[pos->turn], sq))
+			ret += popcount(between(move, sq) & pos->piece[other_color(pos->turn)]);
+
+		attacks = clear_ls1b(attacks);
+	}
+
+	return ret;
+}
+
 int string_to_move(move_t *move, const struct position *pos, const char *str) {
 	move_t moves[64];
 	movegen(moves, pos);

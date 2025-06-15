@@ -15,6 +15,12 @@ struct node {
 	struct node *nodes;
 };
 
+void set_c(double a);
+
+void set_cornervalue(int a);
+
+void set_sidevalue(int a);
+
 move_t mcts(struct position *pos, int maxtime, struct node **node, uint64_t *seed);
 
 struct node *free_node(struct node *node, int except);

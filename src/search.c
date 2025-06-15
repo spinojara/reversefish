@@ -13,7 +13,23 @@
 #define TPPERSEC 1000000000l
 #define TPPERMS     1000000l
 
-const double c = 1.414;
+double c = 0.395304;
+const uint64_t corner = 0x8100000000000081;
+const uint64_t side = 0x7E8181818181817E;
+int cornervalue = 7907;
+int sidevalue = 550;
+
+void set_c(double a) {
+	c = a;
+}
+
+void set_cornervalue(int a) {
+	cornervalue = a;
+}
+
+void set_sidevalue(int a) {
+	sidevalue = a;
+}
 
 int64_t time_now(void) {
 	struct timespec tp;
@@ -72,10 +88,28 @@ int rollout(const struct position *pos, uint64_t *seed) {
 	else {
 		copy.nomove = 0;
 		int nmoves;
-		for (nmoves = 0; moves[nmoves] != MOVE_NULL; nmoves++);
+		int total = 0;
+		int scores[64] = { 0 };
+		for (nmoves = 0; moves[nmoves] != MOVE_NULL; nmoves++) {
+			scores[nmoves] += 100 * flip_count(pos, moves[nmoves]);
 
-		move_t move = uniformint(seed, 0, nmoves);
-		do_move(&copy, moves[(int)move]);
+			if (bitboard(moves[nmoves]) & corner)
+				scores[nmoves] += cornervalue;
+
+			if (bitboard(moves[nmoves]) & side)
+				scores[nmoves] += sidevalue;
+
+			total += scores[nmoves];
+		}
+
+		int random = uniformint(seed, 0, total);
+		int j, count;
+		for (j = 0, count = 0; j < nmoves; j++) {
+			count += scores[j];
+			if (count > random)
+				break;
+		}
+		do_move(&copy, moves[j]);
 	}
 
 	return -rollout(&copy, seed);
