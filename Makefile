@@ -94,7 +94,7 @@ uninstall:
 	$(RM) -f $(DESTDIR)$(BINDIR)/reversefish
 
 clean:
-	$(RM) -rf obj dep
+	$(RM) -rf obj dep reversefish
 
 -include $(DEP)
 .PRECIOUS: dep/%.d
