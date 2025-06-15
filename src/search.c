@@ -25,13 +25,13 @@ int gameover(const struct position *pos) {
 	return popcount(pos->piece[WHITE] | pos->piece[BLACK]) == 64 || pos->nomove >= 2;
 }
 
-static int evaluate(const struct position *pos) {
+int evaluate(const struct position *pos) {
 	return (int)popcount(pos->piece[pos->turn]) - (int)popcount(pos->piece[other_color(pos->turn)]);
 }
 
 int best_node(const struct node *node) {
 	int j = 0;
-	double value;
+	double value = 0.0;
 	for (int i = 0; i < node->nmoves; i++) {
 		int n = node->nodes[i].n;
 		int w = node->nodes[i].w;

@@ -21,4 +21,6 @@ struct node *free_node(struct node *node, int except);
 
 int rollout(const struct position *pos, uint64_t *seed);
 
+int gameover(const struct position *pos);
+
 #endif

@@ -8,6 +8,7 @@
 
 void startpos(struct position *pos) {
 	pos->turn = BLACK;
+	pos->nomove = 0;
 	pos->piece[WHITE] = bitboard(d5) | bitboard(e4);
 	pos->piece[BLACK] = bitboard(d4) | bitboard(e5);
 }

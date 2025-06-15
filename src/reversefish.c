@@ -90,13 +90,42 @@ int main(void) {
 	int first = 1;
 
 	while (1) {
+		if (gameover(&pos)) {
+			printf("Game over, ");
+			int result = popcount(pos.piece[WHITE]) - popcount(pos.piece[BLACK]);
+			if (result > 0)
+				printf("white wins!");
+			else if (result == 0)
+				printf("draw!");
+			else
+				printf("black wins!");
+			printf(" (%lu - %lu)\n", popcount(pos.piece[WHITE]), popcount(pos.piece[BLACK]));
+			break;
+		}
 		if (!(first && player == pos.turn)) {
 			move_t bestmove = mcts(&pos, maxtime, &root, &seed);
-			if (bestmove != MOVE_NULL)
+			if (bestmove != MOVE_NULL) {
+				pos.nomove = 0;
 				do_move(&pos, bestmove);
-			else
+			}
+			else {
+				pos.nomove++;
 				pos.turn = other_color(pos.turn);
+			}
 			print_position(&pos);
+		}
+
+		if (gameover(&pos)) {
+			printf("Game over, ");
+			int result = popcount(pos.piece[WHITE]) - popcount(pos.piece[BLACK]);
+			if (result > 0)
+				printf("white wins!");
+			else if (result == 0)
+				printf("draw!");
+			else
+				printf("black wins!");
+			printf(" (%lu - %lu)\n", popcount(pos.piece[WHITE]), popcount(pos.piece[BLACK]));
+			break;
 		}
 
 		first = 0;
@@ -127,6 +156,7 @@ int main(void) {
 		}
 
 		if (move == MOVE_NULL) {
+			pos.nomove++;
 			pos.turn = other_color(pos.turn);
 			if (root->n) {
 				struct node *old = root;
@@ -136,6 +166,7 @@ int main(void) {
 		}
 		else {
 			do_move(&pos, move);
+			pos.nomove = 0;
 			if (root->n) {
 				int i;
 				for (i = 0; root->moves[i] != move && i < root->nmoves; i++);
@@ -152,6 +183,9 @@ int main(void) {
 
 		print_position(&pos);
 	}
+	free_node(root, -1);
+	free(root);
 #endif
+
 	return 0;
 }
