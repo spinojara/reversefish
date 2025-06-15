@@ -10,6 +10,7 @@ move_t *movegen(move_t *moves, const struct position *pos) {
 	uint64_t pieces = pos->piece[pos->turn];
 	uint64_t attacks;
 	int sq;
+	uint64_t allmoves = 0;
 	while (pieces) {
 		sq = ctz(pieces);
 
@@ -17,8 +18,10 @@ move_t *movegen(move_t *moves, const struct position *pos) {
 		while (attacks) {
 			sq = ctz(attacks);
 
-			if (!get_bit(pos->piece[WHITE] | pos->piece[BLACK], sq))
+			if (!get_bit(pos->piece[WHITE] | pos->piece[BLACK] | allmoves, sq)) {
+				allmoves |= bitboard(sq);
 				*moves++ = sq;
+			}
 
 			attacks = clear_ls1b(attacks);
 		}
@@ -26,8 +29,10 @@ move_t *movegen(move_t *moves, const struct position *pos) {
 		while (attacks) {
 			sq = ctz(attacks);
 
-			if (!get_bit(pos->piece[WHITE] | pos->piece[BLACK], sq))
+			if (!get_bit(pos->piece[WHITE] | pos->piece[BLACK] | allmoves, sq)) {
+				allmoves |= bitboard(sq);
 				*moves++ = sq;
+			}
 
 			attacks = clear_ls1b(attacks);
 		}
