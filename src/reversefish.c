@@ -3,36 +3,51 @@
 #include <stdlib.h>
 #include <strings.h>
 #include <errno.h>
+#include <time.h>
 
 #include "bitboard.h"
 #include "magicbitboard.h"
 #include "position.h"
 #include "move.h"
 #include "search.h"
+#include "montecarlo.h"
 
 int main(void) {
 	bitboard_init();
 	magicbitboard_init();
-	search_init();
 
 	struct position pos;
 
 #if 0
+	uint64_t seed = 127849123;
+
 	startpos(&pos);
+	pos.piece[WHITE] = 0b1111111111111111111111111111111111111111111111111111111111110100;
+	pos.piece[BLACK] = 0b0000000000000000000000000000000000000000000000000000000000001000;
+	pos.turn = BLACK;
 
-	move_t moves[64];
-
-	movegen(moves, &pos);
+	int wins = 0, draws = 0, losses = 0;
+	for (int i = 0; i < 10000; i++) {
+		int result = rollout(&pos, &seed);
+		if (result > 0)
+			wins++;
+		if (result == 0)
+			draws++;
+		if (result < 0)
+			losses++;
+	}
+	printf("wins - draws - losses: %d - %d - %d\n", wins, draws, losses);
 
 	print_position(&pos);
 
-	char str[3];
-	for (int i = 0; moves[i] != MOVE_NULL; i++)
-		printf("move: %s\n", algebraic(str, moves[i]));
-
-	search(&pos, 64, NULL, 1000);
+	struct node *root = calloc(1, sizeof(*root));
+	mcts(&pos, 5000, &root, &seed);
 
 #else
+	uint64_t seed = time(NULL);
+
+	struct node *root = calloc(1, sizeof(*root));
+
 	char buf[BUFSIZ];
 
 	int player = BLACK;
@@ -77,8 +92,7 @@ int main(void) {
 
 	while (1) {
 		if (!(first && player == pos.turn)) {
-			move_t bestmove;
-			search(&pos, 64, &bestmove, maxtime);
+			move_t bestmove = mcts(&pos, maxtime, &root, &seed);
 			if (bestmove != MOVE_NULL)
 				do_move(&pos, bestmove);
 			else
@@ -113,7 +127,30 @@ int main(void) {
 			}
 		}
 
-		do_move(&pos, move);
+		if (move == MOVE_NULL) {
+			pos.turn = other_color(pos.turn);
+			if (root->n) {
+				struct node *old = root;
+				root = &root->nodes[0];
+				free(old);
+			}
+		}
+		else {
+			do_move(&pos, move);
+			if (root->n) {
+				int i;
+				for (i = 0; root->moves[i] != move && i < root->nmoves; i++);
+				if (i == root->nmoves) {
+					fprintf(stderr, "error: what?!\n");
+					exit(5);
+				}
+
+				struct node *old = root;
+				root = free_node(root, i);
+				free(old);
+			}
+		}
+
 		print_position(&pos);
 	}
 #endif

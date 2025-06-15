@@ -1,6 +1,24 @@
 #ifndef MONTECARLO_H
 #define MONTECARLO_H
 
-void mc_search(struct position *pos, move_t *bestmove, int maxtime) {
+#include "move.h"
+#include "position.h"
+#include "bitboard.h"
+
+struct node {
+	int w;
+	int n;
+
+	char leaf;
+	char nmoves;
+	move_t *moves;
+	struct node *nodes;
+};
+
+move_t mcts(struct position *pos, int maxtime, struct node **node, uint64_t *seed);
+
+struct node *free_node(struct node *node, int except);
+
+int rollout(const struct position *pos, uint64_t *seed);
 
 #endif

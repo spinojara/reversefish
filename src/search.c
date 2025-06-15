@@ -34,13 +34,13 @@ static inline uint64_t tt_index(uint64_t key) {
 	return (((key * 12498124013) & 0xFFFFFFFF) * size) >> 32;
 }
 
-int64_t time_now(void) {
+static int64_t time_now(void) {
 	struct timespec tp;
 	clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
 	return (int64_t)tp.tv_sec * TPPERSEC + (int64_t)tp.tv_nsec;
 }
 
-void print_pv(move_t pv[64][64], int depth) {
+static void print_pv(move_t pv[64][64], int depth) {
 	char str[3];
 	for (int i = 0; i < depth && pv[0][i]; i++)
 		printf(" %s", algebraic(str, pv[0][i]));

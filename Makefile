@@ -27,7 +27,7 @@ INSTALL    = install
 CC         = cc
 CSTANDARD  = -std=c11
 CWARNINGS  = -Wall -Wextra -Wshadow -pedantic -Wno-unused-result -Wvla
-COPTIMIZE  = -O3 $(ARCH) $(LTO)
+COPTIMIZE  = -O2 $(ARCH) $(LTO)
 
 ifeq ($(DEBUG), yes)
 	CDEBUG = -g3 -ggdb

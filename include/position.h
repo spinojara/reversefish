@@ -19,7 +19,7 @@ enum color { BLACK, WHITE };
 
 struct position {
 	uint64_t piece[2];
-
+	int nomove;
 	int turn;
 };
 

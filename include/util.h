@@ -14,6 +14,7 @@
 
 uint64_t gxorshift64(void);
 uint64_t xorshift64(uint64_t *seed);
+int uniformint(uint64_t *seed, int a, int b);
 
 static inline int max(int a, int b) { return a < b ? b : a; }
 static inline int min(int a, int b) { return a < b ? a : b; }
