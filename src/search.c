@@ -92,11 +92,23 @@ int mcts_internal(const struct position *pos, uint64_t *seed, struct node *node,
 		if (node->nmoves == 0) {
 			node->moves = NULL;
 			node->nodes = calloc(1, sizeof(*node->nodes));
+			if (!node->nodes) {
+				fprintf(stderr, "error: calloc\n");
+				exit(1);
+			}
 		}
 		else {
 			node->moves = malloc(node->nmoves * sizeof(*node->moves));
+			if (!node->moves) {
+				fprintf(stderr, "error: malloc\n");
+				exit(1);
+			}
 			memcpy(node->moves, moves, node->nmoves * sizeof(*node->moves));
 			node->nodes = calloc(node->nmoves, sizeof(*node->nodes));
+			if (!node->nodes) {
+				fprintf(stderr, "error: calloc\n");
+				exit(1);
+			}
 		}
 
 		result = rollout(pos, seed);
@@ -159,6 +171,10 @@ struct node *free_node(struct node *node, int except) {
 	struct node *ret = NULL;
 	if (except >= 0) {
 		ret = malloc(sizeof(*ret));
+		if (!ret) {
+			fprintf(stderr, "error: malloc\n");
+			exit(1);
+		}
 		memcpy(ret, &node->nodes[except], sizeof(*ret));
 	}
 	free(node->nodes);

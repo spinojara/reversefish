@@ -17,35 +17,13 @@ int main(void) {
 
 	struct position pos;
 
-#if 0
-	uint64_t seed = 127849123;
-
-	startpos(&pos);
-	pos.piece[WHITE] = 0b1111111111111111111111111111111111111111111111111111111111110100;
-	pos.piece[BLACK] = 0b0000000000000000000000000000000000000000000000000000000000001000;
-	pos.turn = BLACK;
-
-	int wins = 0, draws = 0, losses = 0;
-	for (int i = 0; i < 10000; i++) {
-		int result = rollout(&pos, &seed);
-		if (result > 0)
-			wins++;
-		if (result == 0)
-			draws++;
-		if (result < 0)
-			losses++;
-	}
-	printf("wins - draws - losses: %d - %d - %d\n", wins, draws, losses);
-
-	print_position(&pos);
-
-	struct node *root = calloc(1, sizeof(*root));
-	mcts(&pos, 5000, &root, &seed);
-
-#else
 	uint64_t seed = time(NULL);
 
 	struct node *root = calloc(1, sizeof(*root));
+	if (!root) {
+		fprintf(stderr, "error: calloc\n");
+		exit(1);
+	}
 
 	char buf[BUFSIZ];
 
@@ -183,9 +161,9 @@ int main(void) {
 
 		print_position(&pos);
 	}
+
 	free_node(root, -1);
 	free(root);
-#endif
 
 	return 0;
 }
