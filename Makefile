@@ -58,7 +58,7 @@ endif
 TT        ?= 256
 
 SRC = reversefish.c bitboard.c magicbitboard.c util.c move.c position.c\
-      search.c evaluate.c montecarlo.c
+      search.c
 
 OBJ = $(patsubst %.c,obj/%.o,$(SRC))
 

@@ -10,7 +10,6 @@
 #include "position.h"
 #include "move.h"
 #include "search.h"
-#include "montecarlo.h"
 
 int main(void) {
 	bitboard_init();

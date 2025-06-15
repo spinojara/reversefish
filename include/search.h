@@ -1,26 +1,24 @@
 #ifndef SEARCH_H
 #define SEARCH_H
 
-#include <stdint.h>
-
-#include "position.h"
 #include "move.h"
+#include "position.h"
+#include "bitboard.h"
 
-struct searchinfo {
-	uint64_t nodes;
+struct node {
+	int w;
+	int n;
 
-	move_t pv[64][64];
-
-	int root_depth;
-
-	int64_t maxtime;
-	int64_t starttime;
-
-	int interrupt;
+	char leaf;
+	char nmoves;
+	move_t *moves;
+	struct node *nodes;
 };
 
-void search(struct position *pos, int depth, move_t *bestmove, int maxtime);
+move_t mcts(struct position *pos, int maxtime, struct node **node, uint64_t *seed);
 
-void search_init(void);
+struct node *free_node(struct node *node, int except);
+
+int rollout(const struct position *pos, uint64_t *seed);
 
 #endif
