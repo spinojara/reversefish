@@ -79,6 +79,7 @@ all: reversefish
 
 reversefish: $(OBJ)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
 reverseplay: $(OBJ_PLAY)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
@@ -100,7 +101,7 @@ uninstall:
 	$(RM) -f $(DESTDIR)$(BINDIR)/reversefish
 
 clean:
-	$(RM) -rf obj dep reversefish
+	$(RM) -rf obj dep reversefish reverseplay
 
 -include $(DEP)
 .PRECIOUS: dep/%.d

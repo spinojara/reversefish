@@ -99,6 +99,33 @@ int main(int argc, char **argv) {
 			}
 			set_sidevalue(a);
 		}
+		else if (!strcmp(option, "basevalue")) {
+			errno = 0;
+			double a = strtod(value, &endptr);
+			if (errno || *endptr != '\0') {
+				error = 1;
+				break;
+			}
+			set_basevalue(a);
+		}
+		else if (!strcmp(option, "flipvalue")) {
+			errno = 0;
+			double a = strtod(value, &endptr);
+			if (errno || *endptr != '\0') {
+				error = 1;
+				break;
+			}
+			set_flipvalue(a);
+		}
+		else if (!strcmp(option, "mobilityvalue")) {
+			errno = 0;
+			double a = strtod(value, &endptr);
+			if (errno || *endptr != '\0') {
+				error = 1;
+				break;
+			}
+			set_mobilityvalue(a);
+		}
 		else {
 			error = 1;
 			fprintf(stderr, "error: unknown option '%s'\n", option);
