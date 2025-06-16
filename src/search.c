@@ -20,7 +20,6 @@ int basevalue = -6383;
 int cornervalue = 32828;
 int sidevalue = 1781;
 int flipvalue = 696;
-int mobilityvalue = 976;
 
 void set_c(double a) {
 	c = a;
@@ -40,10 +39,6 @@ void set_basevalue(int a) {
 
 void set_flipvalue(int a) {
 	flipvalue = a;
-}
-
-void set_mobilityvalue(int a) {
-	mobilityvalue = a;
 }
 
 int64_t time_now(void) {
@@ -116,15 +111,6 @@ int rollout(const struct position *pos, uint64_t *seed) {
 			/* Sides */
 			if (bitboard(moves[nmoves]) & side)
 				scores[nmoves] += sidevalue;
-
-			struct position copy1 = *pos;
-			do_move(&copy1, moves[nmoves]);
-			move_t moves1[64];
-			int mobility2 = movegen(moves1, &copy1) - moves1 - 1;
-			copy1.turn = other_color(copy1.turn);
-			int mobility1 = movegen(moves1, &copy1) - moves1 - 1;
-
-			scores[nmoves] += mobilityvalue * (mobility1 - mobility2);
 
 			scores[nmoves] = max(scores[nmoves], 1);
 			total += scores[nmoves];

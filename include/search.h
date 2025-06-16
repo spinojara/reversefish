@@ -25,8 +25,6 @@ void set_basevalue(int a);
 
 void set_flipvalue(int a);
 
-void set_mobilityvalue(int a);
-
 move_t mcts(struct position *pos, int maxtime, struct node **node, uint64_t *seed);
 
 struct node *free_node(struct node *node, int except);
