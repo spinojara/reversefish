@@ -13,7 +13,7 @@
 #define TPPERSEC 1000000000l
 #define TPPERMS     1000000l
 
-double c = 0.395304;
+double c = 0.279063;
 const uint64_t corner = 0x8100000000000081;
 const uint64_t side = 0x3C0081818181003C;
 int basevalue = -6383;
